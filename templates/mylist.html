@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+  {% if not session.logged_in %}
+    <center><a class="btn btn-primary" href="{{ url_for('login') }}" role="button">登录</a></center>
+    <center><img src="{{ url_for('static', filename='meme.jpg') }}"  alt="Just Putin on My Glasses" /></center>
+  {% else %}
+
+
+
+    <center><h3>查看"生词本"或者点击"背单词"</h3></center>
+    <center><a class="btn btn-primary" href="{{ url_for('main_page') }}" role="button">随机单词浏览</a></center>
+    <div class="container">
+      <h3>{{ word }}</h3>
+      <p>释义:<br> {{ meaning }}</p>
+      <p>变形:<br> {{ variants }}</p>
+    </div>
+
+
+  {% endif %}
+
+
+{% endblock %}

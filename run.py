@@ -12,16 +12,16 @@ from flaskext.mysql import MySQL
 mysql = MySQL()
 app = Flask(__name__)
 hparser = HTMLParser()
+USERNAME=''
 #################
 # Load default config and override config from an environment variable
 app.config.update(dict(
     # DATABASE=os.path.join(app.root_path, 'flaskr.db'),
-     DEBUG=True,
+    DEBUG=True,
     SECRET_KEY='asdf3',
-    USERNAME='',
     MYSQL_DATABASE_HOST='localhost',
     MYSQL_DATABASE_USER='root',
-    MYSQL_DATABASE_PASSWORD='',
+    MYSQL_DATABASE_PASSWORD='password',
     MYSQL_DATABASE_DB='russian',
     MYSQL_CHARSET='utf-8'
 ))
@@ -42,11 +42,16 @@ MIN_ITEM_ID = MIN_ITEM_ID[0]
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
+        cur.execute(''' select name from user''')
+        namelist = cur.fetchall()
+        namelist = [name[0] for name in namelist]
+        if request.form['username'] not in namelist:
             error = u'输错了!'
         else:
             session['logged_in'] = True
             flash('登录成功')
+            global USERNAME 
+            USERNAME = request.form['username']
             return redirect(url_for('main_page'))
     return render_template('login.html', error=error)
 
@@ -69,6 +74,7 @@ def recite():
     return render_template('mylist.html')
 @app.route("/lookup", methods=['POST'])
 def lookup():
+    print USERNAME
     word = request.form['word']
     # word = hparser.unescape(word)
     cur.execute('''select * from `russian_chn` where word="%s"'''%word)
